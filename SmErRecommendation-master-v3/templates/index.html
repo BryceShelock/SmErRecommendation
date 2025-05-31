@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+
+{% block title %}首页 - 剧本杀密室预约系统{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 80px 0;
+        border-radius: 0 0 20px 20px;
+        margin-bottom: 40px;
+    }
+
+    .hero-title {
+        font-weight: 800;
+        font-size: 3rem;
+        margin-bottom: 20px;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 30px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        width: 50%;
+        height: 4px;
+        background: var(--primary-color);
+        bottom: -10px;
+        left: 0;
+        border-radius: 2px;
+    }
+
+    .card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin-bottom: 25px;
+    }
+
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .card-title {
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+
+    .card-text {
+        color: #666;
+    }
+
+    .badge-genre {
+        background-color: var(--secondary-color);
+        color: white;
+        font-weight: 500;
+    }
+
+    .badge-difficulty {
+        background-color: var(--accent-color);
+        color: white;
+        font-weight: 500;
+    }
+
+    .search-box {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="hero-title">探索精彩剧本杀体验</h1>
+                <p class="hero-subtitle">发现最受欢迎的剧本杀密室，预约您的心仪剧本，开启精彩推理之旅。</p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'stores' %}" class="btn btn-light btn-lg">浏览门店</a>
+                    <!-- <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg">立即注册</a> -->
+                </div>
+            </div>
+            <!-- <div class="col-lg-6">
+                <img src="https://via.placeholder.com/600x400" alt="剧本杀密室" class="img-fluid rounded-3">
+            </div> -->
+        </div>
+    </div>
+</section>
+
+<!-- Search Section -->
+<section class="container">
+    <div class="search-box">
+        <form class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="搜索剧本或门店...">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select">
+                    <option selected>选择城市</option>
+                    <option>北京</option>
+                    <option>上海</option>
+                    <option>广州</option>
+                    <option>深圳</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select">
+                    <option selected>剧本类型</option>
+                    <option>推理</option>
+                    <option>恐怖</option>
+                    <option>情感</option>
+                    <option>欢乐</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">搜索</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Featured Scripts Section -->
+<section class="container">
+    <h2 class="section-title">热门剧本</h2>
+    <div id="scriptRoomList" class="row">
+        <!-- Cards will be dynamically populated here -->
+    </div>
+</section>
+
+<!-- Popular Stores Section -->
+<section class="container mt-5">
+    <h2 class="section-title">推荐门店</h2>
+    <div class="recommendation-stores">
+        <div class="row" id="store-container">
+            <!-- Store cards will be dynamically inserted here -->
+        </div>
+    </div>
+</section>
+
+
+<!-- Features Section -->
+<section class="container mt-5">
+    <h2 class="section-title">为什么选择我们</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="text-center">
+                <i class="bi bi-shield-check display-4 text-primary mb-3"></i>
+                <h4>安全保障</h4>
+                <p class="text-muted">所有门店经过严格筛选，确保安全可靠</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center">
+                <i class="bi bi-calendar-check display-4 text-primary mb-3"></i>
+                <h4>便捷预约</h4>
+                <p class="text-muted">在线预约系统，随时随地轻松预订</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center">
+                <i class="bi bi-star display-4 text-primary mb-3"></i>
+                <h4>优质体验</h4>
+                <p class="text-muted">精选优质剧本，专业DM带本</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async function () {
+        try {
+            const response = await fetch('/api/booking/store_recommendation');
+            if (!response.ok) {
+                throw new Error(`Failed to fetch data: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            const stores = data.stores;
+            const container = document.getElementById('store-container');
+
+            // Clear any existing content
+            container.innerHTML = '';
+
+            // Render store cards
+            stores.forEach(store => {
+                const storeCard = `
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img src="${store.image || 'https://via.placeholder.com/400x300'}" class="card-img-top" alt="${store.name || 'Store Image'}">
+                            <div class="card-body">
+                                <h5 class="card-title">${store.name}</h5>
+                                <p class="card-text">
+                                    <i class="bi bi-geo-alt"></i> ${store.address || 'Address not available'}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge bg-success me-2">${store.business_hours || 'Unknown'}</span>
+                                    </div>
+                                    <a href="/store/${store.id}/" class="btn btn-outline-primary">查看详情</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', storeCard);
+            });
+        } catch (error) {
+            console.error('Error loading store data:', error);
+            // const container = document.getElementById('store-container');
+            // container.innerHTML = `<p class="text-danger">Failed to load store data. Please try again later.</p>`;
+        }
+    })
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch('/api/booking/script_room_recommendation')
+            .then(response => response.json())
+            .then(data => {
+                const scriptRoomList = document.getElementById('scriptRoomList');
+                scriptRoomList.innerHTML = '';
+
+                data.script_rooms.forEach(scriptRoom => {
+                    const card = `
+                        <div class="col-md-4">
+                            <div class="card">
+                                <img src="${scriptRoom.image || 'https://via.placeholder.com/400x300'}" class="card-img-top" alt="剧本封面">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title mb-0">${scriptRoom.name}</h5>
+                                        <span class="badge bg-warning">${scriptRoom.rating || '暂无评分'} <i class="bi bi-star-fill"></i></span>
+                                    </div>
+                                    <p class="card-text">${scriptRoom.description || '暂无描述'}</p>
+                                    <div class="d-flex gap-2 mb-3">
+                                        <span class="badge badge-genre">${scriptRoom.store_name || '未知店铺'}</span>
+                                        <span class="badge badge-difficulty">${scriptRoom.difficulty || '未知难度'}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-primary fw-bold">¥${scriptRoom.price}/人</span>
+                                        <a href="/booking_create/${scriptRoom.id}" class="btn btn-primary">创建预约</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                    scriptRoomList.innerHTML += card;
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching script rooms:', error);
+            });
+    });
+</script>
+
+{% endblock %}

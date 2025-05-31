@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}我的评价{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 40px 0;
+        margin-bottom: 30px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<body>
+    <!-- 页面头部 -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="mb-2">我的评价</h1>
+            <p class="mb-0">查看您对剧本的评价</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                {% if reviews %}
+                <ul class="list-group">
+                    {% for review in reviews %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">剧本: {{ review.script_room.name }}</div>
+                            <p>店铺: {{ review.script_room.store.name }}</p>
+                            <p>评分: {{ review.rating }} / 5</p>
+                            <p>{{ review.comment }}</p>
+                        </div>
+                        <small>时间: {{ review.created_at|date:"Y-m-d H:i" }}</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="col-12 text-center">
+                    <p>没有任何评价</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

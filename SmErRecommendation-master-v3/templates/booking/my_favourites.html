@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}我的收藏{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 40px 0;
+        margin-bottom: 30px;
+    }
+
+    .navbar {
+        background-color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+        font-weight: 700;
+        color: var(--primary-color) !important;
+        font-size: 1.5rem;
+    }
+
+    .booking-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s;
+    }
+
+    /* .booking-card:hover {
+        transform: translateY(-5px);
+    } */
+
+    .nav-pills .nav-link {
+        color: var(--dark-color);
+        border-radius: 10px;
+        padding: 12px 20px;
+        margin-bottom: 10px;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .nav-pills .nav-link i {
+        margin-right: 10px;
+    }
+
+    .card {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .card img {
+        width: 120px;
+        height: 80px;
+        border-radius: 4px;
+        object-fit: cover;
+        margin-right: 1rem;
+    }
+
+    .card .info {
+        flex: 1;
+    }
+
+    .status-pending {
+        color: #ffc107;
+    }
+
+    .status-confirmed {
+        color: #0d6efd;
+    }
+
+    .status-completed {
+        color: #198754;
+    }
+
+    .status-cancelled {
+        color: #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<body>
+
+    <!-- 页面头部 -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="mb-2">我的收藏</h1>
+            <p class="mb-0">查看您收藏的剧本杀</p>
+        </div>
+    </section>
+
+    <!-- 主要内容 -->
+    <div class="container">
+        <div class="row">
+            <!-- 左侧导航 -->
+            <!-- <div class="col-lg-3">
+                <div class="booking-card">
+                    <div class="nav flex-column nav-pills">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-person"></i> 个人中心
+                        </a>
+                        <a class="nav-link active" href="#">
+                            <i class="bi bi-calendar-check"></i> 我的预约
+                        </a>
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-heart"></i> 我的收藏
+                        </a>
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-star"></i> 我的评价
+                        </a>
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-gear"></i> 账号设置
+                        </a>
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-box-arrow-right"></i> 退出登录
+                        </a>
+                    </div>
+                </div>
+            </div> -->
+
+            <div id="favourite-list" class="row">
+                {% for favourite in favourites %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        {% if favourite.script_room.image %}
+                        <img src="{{ favourite.script_room.image.url }}" class="card-img-top" alt="{{ favourite.script_room.name }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ favourite.script_room.name }}</h5>
+                            <p class="card-text">
+                                <strong>店铺名称:</strong> {{ favourite.script_room.store.name }}<br>
+                                <strong>剧本描述:</strong> {{ favourite.script_room.description|truncatewords:15 }}<br>
+                                <strong>价格:</strong> {{ favourite.script_room.price }}
+                            </p>
+                            <a href="/script/{{ favourite.script_room.id }}" class="btn btn-primary">查看详情</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center">
+                    <p>没有任何收藏</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+
+{% endblock %}

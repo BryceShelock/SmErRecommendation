@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+
+{% block title %}剧本详情{% endblock %}
+
+{% block extra_css %}
+<style>
+    .script-detail img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .card-img-top {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .badge-genre {
+        background-color: #007bff;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 20px;
+    }
+
+    .badge-difficulty {
+        background-color: #ffc107;
+        color: #000;
+        padding: 5px 10px;
+        border-radius: 20px;
+    }
+
+    .nav-tabs .nav-link {
+        border: 1px solid #dee2e6;
+        border-bottom: none;
+        background: #f8f9fa;
+        transition: background 0.3s ease;
+    }
+
+    .nav-tabs .nav-link:hover {
+        background: #e9ecef;
+    }
+
+    .nav-tabs .nav-link.active {
+        background: white;
+        border-color: #dee2e6 #dee2e6 white;
+    }
+
+    .tab-content {
+        border: 1px solid #dee2e6;
+        border-top: none;
+        padding: 15px;
+        background: white;
+        border-radius: 0 0 5px 5px;
+    }
+
+    .list-group-item {
+        margin-bottom: 5px;
+    }
+
+    .d-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: top;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<body>
+    {% csrf_token %}
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Script Details Section -->
+            <div class="col-md-4 script-detail">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>{{ script.name }}</h2>
+                    <button id="favourite-btn" class="btn btn-link p-0 text-danger">
+                        <i class="bi bi-heart{% if is_favourited %}-fill{% endif %}" style="font-size: 1.5rem;"></i>
+                    </button>
+                </div>
+                {% if script.image %}
+                <img src="{{ script.image.url }}" alt="{{ script.name }}" class="img-fluid mb-3">
+                {% endif %}
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <strong>店铺名称:</strong> <span>{{ script.store.name }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>剧本描述:</strong> <span>{{ script.description }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>时长(分钟):</strong> <span>{{ script.duration }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>难度:</strong> <span>{{ script.difficulty }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>最少人数:</strong> <span>{{ script.min_players }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>最多人数:</strong> <span>{{ script.max_players }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>价格:</strong> <span>{{ script.price }}</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Tabs Section -->
+            <div class="col-md-8" id="datas">
+                <ul class="nav nav-tabs" id="tabContent">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="bookings-tab" data-bs-toggle="tab" href="#bookings" role="tab"
+                            aria-controls="bookings" aria-selected="true">预约</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="reviews-tab" data-bs-toggle="tab" href="#reviews" role="tab"
+                            aria-controls="reviews" aria-selected="false">评价</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content mt-3">
+                    <!-- Bookings Tab -->
+                    <div class="tab-pane fade show active" id="bookings" role="tabpanel" aria-labelledby="bookings-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5> </h5>
+                            <!-- <button class="btn btn-primary" onclick="openReviewModal()">创建预约</button> -->
+                            <a href="/booking_create/{{ script.id }}" class="btn btn-primary"
+                                onclick="event.stopPropagation();">创建预约</a>
+                        </div>
+                        {% if bookings %}
+                        <ul class="list-group">
+                            {% for booking in bookings %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>
+                                    <strong>用户:</strong> {{ booking.user.username }}<br>
+                                    <strong>预约日期:</strong> {{ booking.date }}<br>
+                                    <strong>预约时间:</strong> {{ booking.time }}<br>
+                                    <strong>玩家数量:</strong> {{ booking.player_count }}<br>
+                                </span>
+                                <span>
+                                    <strong>总价:</strong> {{ booking.total_price }}<br>
+                                    <strong>状态:</strong> {{ booking.get_status_display }}
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>无</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Reviews Tab -->
+                    <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5> </h5>
+                            <button class="btn btn-primary" onclick="openReviewModal()">创建评价</button>
+                        </div>
+                        {% if reviews %}
+                        <ul class="list-group">
+                            {% for review in reviews %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>
+                                    <strong>用户:</strong> {{ review.user.username }}<br>
+                                    <strong>评分:</strong> {{ review.rating }} / 5<br>
+                                </span>
+                                <span>
+                                    <strong>评论:</strong> {{ review.comment }}<br>
+                                    <em>时间:</em> {{ review.created_at|date:"Y-m-d H:i" }}
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>无</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewModalLabel">创建评价</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="reviewForm">
+                        <div class="mb-3">
+                            <label for="rating" class="form-label">评分 (1-5)</label>
+                            <input type="number" class="form-control" id="rating" name="rating" min="1" max="5"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">评论</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">提交</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scriptId = '{{ script.id }}';
+        function openReviewModal() {
+            const modal = new bootstrap.Modal(document.getElementById('reviewModal'));
+            modal.show();
+        }
+
+        document.getElementById('reviewForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('rating', document.getElementById('rating').value);
+            formData.append('comment', document.getElementById('comment').value);
+
+            fetch(`/review_create/${scriptId}/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('创建成功！');
+                        // window.location.href = '/script/{{ script.id }}/';
+                        location.reload();
+                    } else {
+                        alert(data.message || '创建失败，请重试');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('创建失败，请重试');
+                });
+        });
+
+        document.getElementById('favourite-btn').addEventListener('click', function () {
+            fetch(`/toggle_favourite/{{ script.id }}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const icon = this.querySelector('i');
+                    if (data.favourited) {
+                        icon.classList.add('bi-heart-fill');
+                        icon.classList.remove('bi-heart');
+                    } else {
+                        icon.classList.add('bi-heart');
+                        icon.classList.remove('bi-heart-fill');
+                    }
+                });
+        });
+    </script>
+</body>
+
+{% endblock %}

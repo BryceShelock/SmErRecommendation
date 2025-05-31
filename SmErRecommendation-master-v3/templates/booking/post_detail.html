@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}帖子详情{% endblock %}
+
+{% block extra_css %}
+<style>
+    .post-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    .post-header {
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+    }
+
+    .post-content {
+        /* border-bottom: 1px solid #ddd; */
+        margin-bottom: 20px;
+    }
+
+    .images {
+        border-bottom: 1px solid #ddd;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .image-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .image-grid img {
+        width: calc(33.333% - 10px);
+        /* Fit 3 images in a row */
+        height: 200px;
+        /* Fixed height for consistent appearance */
+        object-fit: cover;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .comments {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .comment {
+        margin-bottom: 15px;
+        padding: 10px;
+        background: #f1f1f1;
+        border-radius: 5px;
+    }
+
+    .comment strong {
+        color: #444;
+    }
+
+    .comment-form {
+        margin-top: 20px;
+    }
+
+    .comment-form textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        resize: none;
+    }
+
+    .comment-form button {
+        display: inline-block;
+        background: #007BFF;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .comment-form button:hover {
+        background: #0056b3;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            margin: 10px;
+            padding: 15px;
+        }
+
+        .image-grid img {
+            width: calc(50% - 10px);
+            /* 2 images per row on smaller screens */
+        }
+    }
+
+    @media (max-width: 480px) {
+        .image-grid img {
+            width: 100%;
+            /* 1 image per row on small screens */
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="post-container">
+    <div class="post-header">
+        <h1>{{ post.category }}</h1>
+        <p><strong>作者:</strong> {{ post.user.username }}</p>
+        <p><strong>创建于:</strong> {{ post.created_at|date:"Y-m-d H:i:s" }}</p>
+    </div>
+
+    <div class="post-content">
+        <p>{{ post.content }}</p>
+    </div>
+
+    <div class="images">
+        <div class="image-grid">
+            {% for image in post.images.all %}
+            <img src="{{ image.image.url }}" alt="Post Image">
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="comments">
+        <h2>评论</h2>
+        {% for comment in comments %}
+        <div class="comment">
+            <p><strong>{{ comment.user.username }}</strong> ({{ comment.created_at|date:"Y-m-d H:i:s" }}):</p>
+            <p>{{ comment.content }}</p>
+        </div>
+        {% empty %}
+        <p>来做第一个评论者吧！</p>
+        {% endfor %}
+    </div>
+
+    <div class="comment-form">
+        <h3>创建您的评论</h3>
+        <form method="post" action="">
+            {% csrf_token %}
+            <textarea name="content" rows="3" placeholder="有什么想说的..." required></textarea><br>
+            <button type="submit">提交</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+
+{% block title %}门店{% endblock %}
+
+{% block extra_css %}
+<style>
+    .store-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin-bottom: 25px;
+    }
+
+    .store-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .store-image {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .store-title {
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+
+    .store-rating {
+        color: #ffc107;
+    }
+
+    .store-tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 10px 0;
+    }
+
+    .store-tag {
+        background-color: var(--light-color);
+        color: var(--dark-color);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    .filter-section {
+        background-color: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+    }
+
+    .filter-title {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: var(--dark-color);
+    }
+
+    .filter-group {
+        margin-bottom: 20px;
+    }
+
+    .filter-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .filter-label {
+        font-weight: 500;
+        margin-bottom: 10px;
+        color: var(--dark-color);
+    }
+
+    .filter-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .filter-option {
+        padding: 6px 15px;
+        border-radius: 20px;
+        background-color: var(--light-color);
+        color: var(--dark-color);
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .filter-option:hover,
+    .filter-option.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .search-box {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        padding-left: 40px;
+        border-radius: 25px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+    }
+
+    .create-store-btn {
+        position: fixed;
+        bottom: 100px;
+        right: 100px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+        transition: transform 0.3s;
+    }
+
+    .create-store-btn:hover {
+        transform: scale(1.1);
+        color: white;
+    }
+
+    .store-thumbnail {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        /* Scales while cropping to maintain aspect ratio */
+    }
+
+    .card-link {
+        text-decoration: none;
+        /* Remove underline */
+        color: inherit;
+        /* Maintain text color */
+        display: block;
+        /* Make the link cover the entire card-body */
+    }
+
+    .card-link:hover {
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <!-- 筛选侧边栏 -->
+        <div class="col-lg-3">
+            <div class="filter-section">
+                <div class="search-box">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" class="form-control search-input" placeholder="搜索门店...">
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-label">城市</div>
+                    <div class="filter-options">
+                        <div class="filter-option active">全部</div>
+                        <div class="filter-option">北京</div>
+                        <div class="filter-option">上海</div>
+                        <div class="filter-option">广州</div>
+                        <div class="filter-option">深圳</div>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-label">价格区间</div>
+                    <div class="filter-options">
+                        <div class="filter-option active">全部</div>
+                        <div class="filter-option">¥100以下</div>
+                        <div class="filter-option">¥100-200</div>
+                        <div class="filter-option">¥200-300</div>
+                        <div class="filter-option">¥300以上</div>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-label">评分</div>
+                    <div class="filter-options">
+                        <div class="filter-option active">全部</div>
+                        <div class="filter-option">4.5分以上</div>
+                        <div class="filter-option">4分以上</div>
+                        <div class="filter-option">3.5分以上</div>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-label">特色</div>
+                    <div class="filter-options">
+                        <div class="filter-option active">全部</div>
+                        <div class="filter-option">新店</div>
+                        <div class="filter-option">优惠</div>
+                        <div class="filter-option">热门</div>
+                        <div class="filter-option">推荐</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 门店列表 -->
+        <div class="col-lg-9">
+            <div class="row">
+                {% for store in stores %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="store-card">
+                        <img src="{% if store.image %}{{ store.image.url }}{% else %}https://via.placeholder.com/400x300{% endif %}"
+                            class="store-thumbnail">
+                        <a href="/store/{{ store.id }}/" class="card-link">
+                            <div class="card-body" id="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="store-title mb-0">{{ store.name }}</h5>
+                                    <span class="badge bg-success">
+                                        {{ store.business_hours }}
+                                    </span>
+                                </div>
+                                <p class="card-district-address">
+                                    <i class="bi bi-geo-alt"></i> {{ store.address }}
+                                    {% if store.district %}（{{ store.district }}）{% endif %}
+                                </p>
+                                <div class="store-rating mb-2">
+                                    {% for i in range_stars %}
+                                    {% if store.rating >= i %}
+                                    <i class="bi bi-star-fill"></i>
+                                    {% else %}
+                                    <i class="bi bi-star"></i>
+                                    {% endif %}
+                                    {% endfor %}
+                                    <span class="ms-1">{{ store.rating }}</span>
+                                </div>
+                                <div class="store-tags">
+                                    {% if store.feature_list %}
+                                    {% for tag in store.feature_list %}
+                                    <span class="store-tag">{{ tag }}</span>
+                                    {% endfor %}
+                                    {% else %}
+                                    <span class="store-tag">暂无特色</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                {% if store.min_price %}
+                                <span class="text-primary fw-bold">¥{{ store.min_price }}</span>
+                                <small class="text-muted ms-2">起</small>
+                                {% else %}
+                                <span class="text-muted">价格未设置</span>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'script_room_create' %}?store_id={{ store.id }}"
+                                class="btn btn-primary">创建剧本</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+
+        <a href="{% url 'store_create' %}" class="create-store-btn"><i class="bi bi-plus-lg"></i></a>
+    </div>
+</div>
+{% endblock %}

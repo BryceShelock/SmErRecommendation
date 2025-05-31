@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+
+{% block title %}登录 - 剧本杀密室预约系统{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-container {
+        max-width: 400px;
+        margin: 40px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .login-title {
+        text-align: center;
+        margin-bottom: 30px;
+        color: var(--dark-color);
+    }
+
+    .form-floating {
+        margin-bottom: 20px;
+    }
+
+    .form-floating>label {
+        color: #666;
+    }
+
+    .form-control {
+        padding: 12px 15px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 12px;
+        font-weight: 600;
+        margin-top: 10px;
+    }
+
+    .social-login {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .social-login-title {
+        position: relative;
+        margin-bottom: 20px;
+        color: #666;
+    }
+
+    .social-login-title:before,
+    .social-login-title:after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 30%;
+        height: 1px;
+        background: #e0e0e0;
+    }
+
+    .social-login-title:before {
+        left: 0;
+    }
+
+    .social-login-title:after {
+        right: 0;
+    }
+
+    .social-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .social-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        transition: transform 0.3s;
+    }
+
+    .social-button:hover {
+        transform: translateY(-3px);
+    }
+
+    .wechat {
+        background: #07C160;
+    }
+
+    .weibo {
+        background: #E6162D;
+    }
+
+    .qq {
+        background: #12B7F5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <h2 class="login-title">欢迎回来</h2>
+    <form id="loginForm" onsubmit="return handleLogin(event)">
+        {% csrf_token %}
+        <div class="form-floating">
+            <input type="text" class="form-control" id="username" name="username" placeholder="用户名/手机号" required>
+            <label for="username">用户名/手机号</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" id="password" name="password" placeholder="密码" required>
+            <label for="password">密码</label>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                <label class="form-check-label" for="remember">记住我</label>
+            </div>
+            <a href="#" class="text-primary">忘记密码？</a>
+        </div>
+        <button type="submit" class="btn btn-primary btn-login">登录</button>
+        <div class="text-center mt-3">
+            <p class="mb-0">还没有账号？ <a href="{% url 'register' %}" class="text-primary">立即注册</a></p>
+        </div>
+    </form>
+
+    <div class="social-login">
+        <div class="social-login-title">其他登录方式</div>
+        <div class="social-buttons">
+            <a href="#" class="social-button wechat">
+                <i class="bi bi-wechat"></i>
+            </a>
+            <a href="#" class="social-button weibo">
+                <i class="bi bi-weibo"></i>
+            </a>
+            <a href="#" class="social-button qq">
+                <i class="bi bi-tencent-qq"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function handleLogin(event) {
+        event.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const remember = document.getElementById('remember').checked;
+
+        fetch('/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 保存用户信息到 localStorage
+                    if (remember) {
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                    } else {
+                        sessionStorage.setItem('user', JSON.stringify(data.user));
+                    }
+                    window.location.href = data.redirect || '/';
+                } else {
+                    alert(data.message || '登录失败，请重试');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('登录失败，请重试');
+            });
+
+        return false;
+    }
+
+    // 检查登录状态
+    function checkLoginStatus() {
+        const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || 'null');
+        if (user) {
+            // 更新导航栏显示
+            const userMenu = document.querySelector('.user-menu');
+            if (userMenu) {
+                userMenu.innerHTML = `
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                    ${user.avatar ? `<img src="${user.avatar}" alt="Avatar" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;">` :
+                        `<i class="bi bi-person-circle"></i>`} ${user.username}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="/profile/"><i class="bi bi-person"></i> 个人中心</a></li>
+                    <li><a class="dropdown-item" href="/my-bookings/"><i class="bi bi-calendar-check"></i> 我的预约</a></li>
+                    <li><a class="dropdown-item" href="/my-favorites/"><i class="bi bi-heart"></i> 我的收藏</a></li>
+                    <li><a class="dropdown-item" href="/my-reviews/"><i class="bi bi-star"></i> 我的评价</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="handleLogout()"><i class="bi bi-box-arrow-right"></i> 退出登录</a></li>
+                </ul>
+            `;
+            }
+        }
+    }
+
+    // 处理退出登录
+    function handleLogout() {
+        fetch('/logout/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+            .then(() => {
+                localStorage.removeItem('user');
+                sessionStorage.removeItem('user');
+                window.location.href = '/';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('退出登录失败，请重试');
+            });
+    }
+
+    // 页面加载时检查登录状态
+    document.addEventListener('DOMContentLoaded', checkLoginStatus);
+</script>
+{% endblock %}

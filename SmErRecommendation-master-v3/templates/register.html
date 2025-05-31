@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}注册 - 剧本杀密室预约系统{% endblock %}
+
+{% block extra_css %}
+<style>
+    .register-container {
+        max-width: 500px;
+        margin: 40px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .register-title {
+        text-align: center;
+        margin-bottom: 30px;
+        color: var(--dark-color);
+    }
+
+    .form-floating {
+        margin-bottom: 20px;
+    }
+
+    .form-floating>label {
+        color: #666;
+    }
+
+    .form-control {
+        padding: 12px 15px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
+    }
+
+    .btn-register {
+        width: 100%;
+        padding: 12px;
+        font-weight: 600;
+        margin-top: 10px;
+    }
+
+    .terms-text {
+        font-size: 0.9rem;
+        color: #666;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .terms-text a {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    .terms-text a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <h2 class="register-title">创建账号</h2>
+    <form id="registerForm" onsubmit="return handleRegister(event)">
+        {% csrf_token %}
+        <div class="form-floating">
+            <input type="text" class="form-control" id="username" name="username" placeholder="用户名" required>
+            <label for="username">用户名</label>
+        </div>
+        <div class="form-floating">
+            <input type="email" class="form-control" id="email" name="email" placeholder="邮箱" required>
+            <label for="email">邮箱</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" id="password" name="password" placeholder="密码" required>
+            <label for="password">密码</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="确认密码"
+                required>
+            <label for="confirm_password">确认密码</label>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">性别</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="gender" id="male" value="male" checked>
+                <label class="form-check-label" for="male">男</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="gender" id="female" value="female">
+                <label class="form-check-label" for="female">女</label>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">用户类型</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="userType" id="player" value="player" checked>
+                <label class="form-check-label" for="player">玩家</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="userType" id="store" value="store">
+                <label class="form-check-label" for="store">商家</label>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-register">注册</button>
+        <div class="text-center mt-3">
+            <p class="mb-0">已有账号？ <a href="{% url 'login' %}" class="text-primary">立即登录</a></p>
+        </div>
+    </form>
+</div>
+
+<script>
+    function handleRegister(event) {
+        event.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        const gender = document.querySelector('input[name="gender"]:checked').value;
+        const userType = document.querySelector('input[name="userType"]:checked').value;
+
+        if (password !== confirmPassword) {
+            alert('两次输入的密码不一致');
+            return false;
+        }
+
+        fetch('/register/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                username: username,
+                email: email,
+                password: password,
+                gender: gender,
+                userType: userType
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('注册成功！');
+                    window.location.href = '/login/';  // 注册成功后跳转到登录页
+                } else {
+                    alert(data.message || '注册失败，请重试');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('注册失败，请重试');
+            });
+
+        return false;
+    }
+</script>
+
+{% endblock %}

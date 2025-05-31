@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}创建帖子{% endblock %}
+
+{% block extra_css %}
+<style>
+    .post-create-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .post-create-title {
+        text-align: center;
+        margin-bottom: 30px;
+        color: var(--dark-color);
+    }
+
+    form {
+        max-width: 500px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+
+    textarea {
+        resize: vertical;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<body>
+    <div class="post-create-container">
+        <h1 class="post-create-title">创建新帖子</h1>
+        <form id="postForm" onsubmit="return createPost(event)">
+            {% csrf_token %}
+            <div>
+                <label for="category">分类:</label>
+                <select id="category" name="category" required>
+                    <option value="Experence">经验分享</option>
+                    <option value="QA">求助问答</option>
+                    <option value="Recommendation">剧本推荐</option>
+                    <option value="Reviews">店铺点评</option>
+                    <option value="MakeFriends">组队交友</option>
+                </select><br><br>
+            </div>
+
+            <div>
+                <label for="content">内容:</label>
+                <textarea id="content" name="content" rows="5" required></textarea><br><br>
+            </div>
+
+            <div>
+                <label for="images">图片 (最多 6):</label>
+                <input type="file" id="images" name="images" accept="image/*" multiple><br><br>
+            </div>
+
+            <div>
+                <button type="submit" class="btn btn-primary">创建</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        async function createPost(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('category', document.getElementById('category').value);
+            formData.append('content', document.getElementById('content').value);
+            const files = document.getElementById('images').files;
+            for (let i = 0; i < files.length; i++) {
+                formData.append('images', files[i]);
+            }
+
+            try {
+                await fetch('/post_create/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: formData,
+                }).then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('创建成功！');
+                            window.location.href = '/community';
+                        } else {
+                            alert(data.message || '创建失败，请重试');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('创建失败，请重试');
+                    });
+            } catch (error) {
+                console.error('Error creating booking:', error);
+                alert('An unexpected error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+
+{% endblock %}
